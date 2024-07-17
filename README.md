@@ -1,7 +1,7 @@
 
-# Data Pipeline Class
+# DataPipeline
 
-A Python class for managing and executing a data processing pipeline with multiple stages. This class allows you to add, enable, disable, and execute stages dynamically, with support for verbose output and flexible naming of output directories.
+A Python class for managing and executing a data processing pipeline with multiple stages. This class allows you to add, enable, disable, and execute stages dynamically, with support for verbose output and flexible naming of output directories. Additionally, you can specify functions to be executed before and after each stage.
 
 ## Features
 
@@ -10,6 +10,7 @@ A Python class for managing and executing a data processing pipeline with multip
 - Verbose output for detailed processing information
 - Option to stack stage names for output directory naming
 - Unique directory naming for each pipeline execution using timestamps
+- Specify functions to be executed before and after each stage
 
 ## Installation
 
@@ -59,7 +60,7 @@ def function5(input_directory, output_directory):
 Initialize the `DataPipeline` with the base directory, start folder, and optional settings for verbosity and stacked stage names.
 
 ```python
-pipeline = DataPipeline('data', 'ESC50', verbose=True, stacked_stages_names_output=True)
+pipeline = DataPipeline('data', 'original_data', verbose=True, stacked_stages_names_output=True)
 ```
 
 ### Add stages to the pipeline
@@ -67,22 +68,36 @@ pipeline = DataPipeline('data', 'ESC50', verbose=True, stacked_stages_names_outp
 Add stages with their respective names, functions, and optional output directory names.
 
 ```python
-pipeline.add_stage('train', function0, 'training_checkpoints')
-pipeline.add_stage('test_tf', function1, '')  # No output directory change
-pipeline.add_stage('optimize', function2, 'optimized')
-pipeline.add_stage('convert_tf_tflite', function3, 'tflite')
-pipeline.add_stage('test_tflite', function4, '')  # No output directory change
-pipeline.add_stage('convert_tflite_c', function5, 'converted')
+pipeline.add_stage('rename', function0, 'renamed')
+pipeline.add_stage('trim', function1, 'trimmed')
+pipeline.add_stage('normalize', function2, 'normalized')
+pipeline.add_stage('split', function3, 'split')
+pipeline.add_stage('augment', function4, 'augmented')
 ```
 
 ### Enable or disable specific stages
 
-Enable or disable stages by their name. All enabled by default.
+Enable or disable stages by their name.
 
 ```python
-pipeline.enable_stage('train')  # Enable stage 'train'
-pipeline.disable_stage('test_tf')  # Disable stage 'test_tf'
-pipeline.enable_stage('optimize')  # Enable stage 'optimize'
+pipeline.disable_stage('trim')
+pipeline.disable_stage('normalize')
+pipeline.disable_stage('split')
+```
+
+### Set pre and post stage functions
+
+Set functions to be executed before and after each stage.
+
+```python
+def pre_stage_function(stage_name, current_directory):
+    print(f"Pre-stage function called for stage: {stage_name}, current directory: {current_directory}")
+
+def post_stage_function(stage_name, current_directory):
+    print(f"Post-stage function called for stage: {stage_name}, current directory: {current_directory}")
+
+pipeline.set_prestage_function(pre_stage_function)
+pipeline.set_poststage_function(post_stage_function)
 ```
 
 ### Execute the pipeline
@@ -109,6 +124,8 @@ class DataPipeline:
         self.stages = []
         self.stage_control = {}
         self.executed_stages_stack = []
+        self.prestage_function = None
+        self.poststage_function = None
 
     def add_stage(self, stage_name, function_pointer, output_name=""):
         stage_id = len(self.stages)
@@ -135,6 +152,12 @@ class DataPipeline:
         if not found:
             print(f"Stage name {stage_name} does not exist.")
 
+    def set_prestage_function(self, f):
+        self.prestage_function = f
+
+    def set_poststage_function(self, f):
+        self.poststage_function = f
+
     def execute(self):
         for stage_info in self.stages:
             stage_id = stage_info['id']
@@ -146,6 +169,9 @@ class DataPipeline:
             stage_name = stage_info['name']
             function = stage_info['function']
             output_name = stage_info['output_name']
+
+            if self.prestage_function:
+                self.prestage_function(stage_name, self.current_directory)
 
             if output_name:
                 if self.stack_stages_names:
@@ -165,37 +191,39 @@ class DataPipeline:
                 if output_name:
                     print(f" - Output directory: {next_directory}")
 
-            # Call the processing function with current and next directories
             function(self.current_directory, next_directory)
             self.current_directory = next_directory
 
+            if self.poststage_function:
+                self.poststage_function(stage_name, self.current_directory)
+
 # Define your external functions
 def function0(input_directory, output_directory):
-    # Implementation for stage 0
-    pass
+    print("function 0 called")
 
 def function1(input_directory, output_directory):
-    # Implementation for stage 1
-    pass
+    print("function 1 called")
 
 def function2(input_directory, output_directory):
-    # Implementation for stage 2
-    pass
+    print("function 2 called")
 
 def function3(input_directory, output_directory):
-    # Implementation for stage 3
-    pass
+    print("function 3 called")
 
 def function4(input_directory, output_directory):
-    # Implementation for stage 4
-    pass
+    print("function 4 called")
 
 def function5(input_directory, output_directory):
-    # Implementation for stage 5
-    pass
+    print("function 5 called")
+
+def pre_stage_function(stage_name, current_directory):
+    print(f"Pre-stage function called for stage: {stage_name}, current directory: {current_directory}")
+
+def post_stage_function(stage_name, current_directory):
+    print(f"Post-stage function called for stage: {stage_name}, current directory: {current_directory}")
 
 # Create an instance of DataPipeline
-pipeline = DataPipeline('data', 'ESC50', verbose=True, stacked_stages_names_output=True)
+pipeline = DataPipeline('models', '', verbose=True, stacked_stages_names_output=True)
 pipeline.add_stage('train', function0, 'training_checkpoints')
 pipeline.add_stage('test_tf', function1, '')  # No output directory change
 pipeline.add_stage('optimize', function2, 'optimized')
@@ -203,6 +231,16 @@ pipeline.add_stage('convert_tf_tflite', function3, 'tflite')
 pipeline.add_stage('test_tflite', function4, '')  # No output directory change
 pipeline.add_stage('convert_tflite_c', function5, 'converted')
 
-# Execute the pipeline
+pipeline.set_prestage_function(pre_stage_function)
+pipeline.set_poststage_function(post_stage_function)
+
+pipeline.disable_stage('train')
+pipeline.disable_stage('test_tf')
+pipeline.disable_stage('optimize')
+
 pipeline.execute()
 ```
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
