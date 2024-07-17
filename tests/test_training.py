@@ -33,11 +33,11 @@ def function4(input_directory, output_directory):
 
 def function5(input_directory, output_directory):
     # Implementation for stage 2
-    print("function 4 called")
+    print("function 5 called")
 # Usage
 pipeline = DataPipeline(
     base_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data',
-    start_folder='original',
+    start_folder='starting_folder',
     verbose=True,
     stacked_stages_names_output=False
 )
@@ -48,6 +48,10 @@ pipeline.add_stage('optimize', function2, 'optimized')
 pipeline.add_stage('convert_tf_tflite', function3, 'tflite')
 pipeline.add_stage('test_tflite', function4, '')
 pipeline.add_stage('convert_tflite_c', function5, 'converted')
+
+pipeline.disable_stage('train')
+pipeline.disable_stage('test_tf')
+pipeline.disable_stage('optimize')
 
 pipeline.execute()
 
