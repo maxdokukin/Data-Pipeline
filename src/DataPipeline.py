@@ -13,6 +13,8 @@ class DataPipeline:
         stages (list): List to store stages with their corresponding details.
         stage_control (dict): Dictionary to control the execution of stages by their IDs.
         executed_stages_stack (list): List to keep track of executed stage names for stacked naming.
+        prestage_function (callable): Function to be executed before each stage.
+        poststage_function (callable): Function to be executed after each stage.
     """
 
     def __init__(self, base_directory, start_folder, verbose=False, stacked_stages_names_output=False):
@@ -33,6 +35,8 @@ class DataPipeline:
         self.stages = []
         self.stage_control = {}
         self.executed_stages_stack = []
+        self.prestage_function = None
+        self.poststage_function = None
 
     def add_stage(self, stage_name, function_pointer, output_name=""):
         """
@@ -80,6 +84,24 @@ class DataPipeline:
         if not found:
             print(f"Stage name {stage_name} does not exist.")
 
+    def set_prestage_function(self, f):
+        """
+        Sets the function to be executed before each stage.
+
+        Args:
+            f (callable): The function to execute before each stage.
+        """
+        self.prestage_function = f
+
+    def set_poststage_function(self, f):
+        """
+        Sets the function to be executed after each stage.
+
+        Args:
+            f (callable): The function to execute after each stage.
+        """
+        self.poststage_function = f
+
     def execute(self):
         """
         Executes the pipeline by processing each stage in the order they were added.
@@ -94,6 +116,11 @@ class DataPipeline:
             stage_name = stage_info['name']
             function = stage_info['function']
             output_name = stage_info['output_name']
+
+            if self.prestage_function:
+                if self.verbose:
+                    print("Executing pre stage function.")
+                self.prestage_function(stage_name, self.current_directory)
 
             if output_name:
                 if self.stack_stages_names:
@@ -116,3 +143,8 @@ class DataPipeline:
             # Call the processing function with current and next directories
             function(self.current_directory, next_directory)
             self.current_directory = next_directory
+
+            if self.poststage_function:
+                if self.verbose:
+                    print("Executing post stage function.")
+                self.poststage_function(stage_name, self.current_directory)
