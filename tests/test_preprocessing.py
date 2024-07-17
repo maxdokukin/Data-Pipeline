@@ -36,7 +36,7 @@ pipeline = DataPipeline(
     base_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data',
     start_folder='original',
     verbose=True,
-    stacked_stages_names_outpud=False
+    stacked_stages_names_output=True
 )
 
 pipeline.add_stage('rename', function0, 'renamed')
@@ -45,13 +45,9 @@ pipeline.add_stage('normalize', function2, 'normalized')
 pipeline.add_stage('split', function3, 'split')
 pipeline.add_stage('augment', function4, 'augmented')
 
-# Enable or disable specific stages
-pipeline.enable_stage(0, True)  # Execute stage 0
-pipeline.enable_stage(1, True)  # Skip stage 1
-pipeline.enable_stage(2, True)  # Execute stage 2
-pipeline.enable_stage(3, True)  # Execute stage 2
-pipeline.enable_stage(4, True)  # Execute stage 2
+pipeline.disable_stage('trim')
+pipeline.disable_stage('normalize')
+pipeline.disable_stage('split')
 
-pipeline.execute_pipeline()
-# data = ...  # Load your data here
-# processed_data = pipeline.execute_pipeline(data)
+pipeline.execute()
+
