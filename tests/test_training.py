@@ -35,7 +35,7 @@ def post_stage_function(stage_name, current_directory):
 # Usage
 pipeline = DataPipeline(
     base_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data',
-    start_folder='starting_folder',
+    start_folder='',
     verbose=True,
     stacked_stages_names_output=False
 )
@@ -51,8 +51,8 @@ pipeline.add_stage('convert_tflite_c', function5, 'converted')
 pipeline.set_prestage_function(pre_stage_function)
 pipeline.set_poststage_function(post_stage_function)
 
-pipeline.disable_stage('train')
-pipeline.disable_stage('test_tf')
-pipeline.disable_stage('optimize')
+# pipeline.disable_stage('train')
+# pipeline.disable_stage('test_tf')
+# pipeline.disable_stage('optimize')
 
 pipeline.execute()
