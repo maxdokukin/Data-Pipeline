@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-class DataPipeline:
+class DataPipelineController:
     """
     A class to manage and execute a data processing pipeline with multiple stages.
 

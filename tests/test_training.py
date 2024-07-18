@@ -1,4 +1,4 @@
-from DataPipeline import DataPipeline
+from DataPipelineController import DataPipelineController
 
 # Define your external functions
 def function0(input_directory, output_directory):
@@ -33,7 +33,7 @@ def post_stage_function(stage_name, current_directory):
     print(f"Post-stage function called")
 
 # Usage
-pipeline = DataPipeline(
+pipeline = DataPipelineController(
     base_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data',
     start_folder='',
     verbose=True,
