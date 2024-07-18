@@ -37,6 +37,7 @@ class DataPipeline:
         self.executed_stages_stack = []
         self.prestage_function = None
         self.poststage_function = None
+        self.full_pipeline_execution = True
 
     def add_stage(self, stage_name, function_pointer, output_name=""):
         """
@@ -68,21 +69,7 @@ class DataPipeline:
         if not found:
             print(f"Stage name {stage_name} does not exist.")
 
-    def enable_stage(self, stage_name):
-        """
-        Enables a specific stage based on its name.
-
-        Args:
-            stage_name (str): The name of the stage to enable.
-        """
-        found = False
-        for stage in self.stages:
-            if stage['name'] == stage_name:
-                self.stage_control[stage['id']] = True
-                found = True
-                break
-        if not found:
-            print(f"Stage name {stage_name} does not exist.")
+        self.full_pipeline_execution = False
 
     def set_prestage_function(self, f):
         """
@@ -101,6 +88,9 @@ class DataPipeline:
             f (callable): The function to execute after each stage.
         """
         self.poststage_function = f
+
+    def is_full_pipeline_execution(self):
+        return self.full_pipeline_execution
 
     def execute(self):
         """
