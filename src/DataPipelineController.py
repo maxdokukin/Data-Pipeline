@@ -16,11 +16,12 @@ class DataPipelineController:
         executed_stages_stack (list): List to keep track of executed stage names for stacked naming.
         prestage_function (callable): Function to be executed before each stage.
         poststage_function (callable): Function to be executed after each stage.
+        full_pipeline_execution (bool): Indicates if the entire pipeline is executed without skipping stages.
     """
 
     def __init__(self, base_directory, start_folder, verbose=False, stacked_stages_names_output=False):
         """
-        Initializes the DataPipeline with a base directory, start folder, and options.
+        Initializes the DataPipelineController with a base directory, start folder, and options.
 
         Args:
             base_directory (str): The root directory for the dataset.
@@ -69,7 +70,6 @@ class DataPipelineController:
                 break
         if not found:
             print(f"Stage name {stage_name} does not exist.")
-
         self.full_pipeline_execution = False
 
     def set_prestage_function(self, f):
@@ -91,6 +91,12 @@ class DataPipelineController:
         self.poststage_function = f
 
     def is_full_pipeline_execution(self):
+        """
+        Checks if the entire pipeline will be executed without any stages being skipped.
+
+        Returns:
+            bool: True if all stages will be executed, False otherwise.
+        """
         return self.full_pipeline_execution
 
     def execute(self):
@@ -110,7 +116,7 @@ class DataPipelineController:
 
             if self.prestage_function:
                 if self.verbose:
-                    print("Executing pre stage function.")
+                    print("Executing pre-stage function.")
                 self.prestage_function(stage_name, self.current_directory)
 
             if output_name:
@@ -137,5 +143,5 @@ class DataPipelineController:
 
             if self.poststage_function:
                 if self.verbose:
-                    print("Executing post stage function.")
+                    print("Executing post-stage function.")
                 self.poststage_function(stage_name, self.current_directory)
