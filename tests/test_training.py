@@ -1,29 +1,30 @@
 from DataPipelineController import DataPipelineController
 
 # Define your external functions
-def function0(input_directory, output_directory):
+def function0(config, input_directory, output_directory):
     # Implementation for stage 0
-    print("Function 0 called")
+    print("function 0 called")
 
-def function1(input_directory, output_directory):
+def function1(config, input_directory, output_directory):
     # Implementation for stage 1
-    print("Function 1 called")
+    print("function 1 called")
 
-def function2(input_directory, output_directory):
+def function2(config, input_directory, output_directory):
     # Implementation for stage 2
-    print("Function 2 called")
+    print("function 2 called")
 
-def function3(input_directory, output_directory):
-    # Implementation for stage 3
-    print("Function 3 called")
+def function3(config, input_directory, output_directory):
+    # Implementation for stage 2
+    print("function 3 called")
 
-def function4(input_directory, output_directory):
-    # Implementation for stage 4
-    print("Function 4 called")
+def function4(config, input_directory, output_directory):
+    # Implementation for stage 2
+    print("function 4 called")
 
-def function5(input_directory, output_directory):
-    # Implementation for stage 5
-    print("Function 5 called")
+def function5(config, input_directory, output_directory):
+    # Implementation for stage 2
+    print("function 5 called")
+
 
 # Define pre and post stage functions
 def pre_stage_function(stage_name, current_directory):
@@ -31,6 +32,7 @@ def pre_stage_function(stage_name, current_directory):
 
 def post_stage_function(stage_name, current_directory):
     print(f"Post-stage function called")
+
 
 # Usage
 pipeline = DataPipelineController(

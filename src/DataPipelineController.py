@@ -120,7 +120,10 @@ class DataPipelineController:
                     self.executed_stages_stack.append(output_name)
                     next_directory = os.path.join(self.base_directory, '_'.join(self.executed_stages_stack))
                 else:
-                    next_directory = os.path.join(self.base_directory, f"{self.start_folder}_{output_name}")
+                    if self.start_folder:
+                        next_directory = os.path.join(self.base_directory, f"{self.start_folder}_{output_name}")
+                    else:
+                        next_directory = os.path.join(self.base_directory, output_name)
 
                 if not os.path.exists(next_directory):
                     os.makedirs(next_directory)

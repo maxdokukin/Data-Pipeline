@@ -1,33 +1,23 @@
 from DataPipelineController import DataPipelineController
 
 # Define your external functions
-def function0(input_directory, output_directory):
+def function0(config, input_directory, output_directory):
     # Implementation for stage 0
-    # if not os.path.exists(output_directory):
-    #     os.makedirs(output_directory)
-    # for filename in os.listdir(input_directory):
-    #     src = os.path.join(input_directory, filename)
-    #     dst = os.path.join(output_directory, filename)
-    #     # Implement the renaming logic
-    #     # For example:
-    #     os.rename(src, dst)
     print("function 0 called")
 
-
-def function1(input_directory, output_directory):
+def function1(config, input_directory, output_directory):
     # Implementation for stage 1
     print("function 1 called")
 
-
-def function2(input_directory, output_directory):
+def function2(config, input_directory, output_directory):
     # Implementation for stage 2
     print("function 2 called")
 
-def function3(input_directory, output_directory):
+def function3(config, input_directory, output_directory):
     # Implementation for stage 2
     print("function 3 called")
 
-def function4(input_directory, output_directory):
+def function4(config, input_directory, output_directory):
     # Implementation for stage 2
     print("function 4 called")
 
