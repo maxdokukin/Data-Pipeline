@@ -9,30 +9,41 @@ class Config:
     """
 
     def __init__(self, **kwargs):
-        """
-        Initializes a new instance of the Config class.
-
-        Args:
-            **kwargs: Arbitrary keyword arguments. 'verbose' is used for logging, and
-                      others are stored as configuration parameters.
-        """
         self.verbose = kwargs.pop('verbose', False)  # Extract verbosity and remove from kwargs
         self.__dict__.update(kwargs)  # Update instance dictionary with remaining kwargs
+        self.verbose = kwargs.pop('verbose', False)
+        self.__dict__.update(kwargs)
 
         if self.verbose:
             print("Initializing configuration with parameters:", kwargs)
+
 
     def add_parameter(self, key, value):
         """
         Add or update a key-value pair in the configuration.
 
         Args:
-            key (str): The key for the parameter to add or update.
-            value (any): The value for the parameter.
-
-        Example:
-            config.add_parameter('learning_rate', 0.01)
+            key: The key for the parameter.
+            value: The value for the parameter.
         """
         self.__dict__[key] = value
         if self.verbose:
-            print(f"Added or updated parameter: {key} = {value}")
+            print(f"Added parameter: {key} = {value}")
+
+
+    def parameters_to_string(self):
+        """
+        Returns all configuration parameters as a formatted string.
+
+        Returns:
+            str: A string representation of all parameters.
+        """
+        params_str_list = []
+        for key, value in self.__dict__.items():
+            if isinstance(value, (list, tuple)):
+                params_str_list.append(f"{key}:")
+                for item in value:
+                    params_str_list.append(f"    {item}")
+            else:
+                params_str_list.append(f"{key}: {value}")
+        return "\n".join(params_str_list)
