@@ -9,8 +9,6 @@ class Config:
     """
 
     def __init__(self, **kwargs):
-        self.verbose = kwargs.pop('verbose', False)  # Extract verbosity and remove from kwargs
-        self.__dict__.update(kwargs)  # Update instance dictionary with remaining kwargs
         self.verbose = kwargs.pop('verbose', False)
         self.__dict__.update(kwargs)
 
