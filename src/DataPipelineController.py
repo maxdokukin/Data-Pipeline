@@ -45,6 +45,13 @@ class DataPipelineController:
         self.config = config
         self.full_pipeline_execution = True
 
+        self.config.add_parameter('logs_dir', os.path.join(self.base_directory, 'logs'))
+        if not os.path.exists(config.logs_dir):
+            os.makedirs(config.logs_dir)
+
+        self.config.add_parameter('timestamp', self.timestamp)
+
+
     def add_stage(self, stage_name, function_pointer, output_name=""):
         """
         Adds a processing stage to the pipeline.
