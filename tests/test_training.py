@@ -37,7 +37,7 @@ def post_stage_function(stage_name, current_directory):
 # Usage
 pipeline = DataPipelineController(
     base_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data',
-    start_folder='',
+    start_directory='',
     verbose=True,
     stacked_stages_names_output=False
 )

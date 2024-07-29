@@ -19,7 +19,7 @@ class DataPipelineController:
         full_pipeline_execution (bool): Indicates if the entire pipeline is executed without skipping stages.
     """
 
-    def __init__(self, base_directory, start_folder, config=None, verbose=False, stacked_stages_names_output=False):
+    def __init__(self, base_directory, start_directory, config=None, verbose=False, stacked_stages_names_output=False):
         """
         Initializes the DataPipelineController with a base directory, start folder, and configuration options.
 
@@ -32,12 +32,19 @@ class DataPipelineController:
         """
         self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         self.base_directory = os.path.join(base_directory, f"pipeline_output_{self.timestamp}")
-        self.start_directory = os.path.join(base_directory, start_folder)
+
+        if start_directory is not None:
+            self.start_directory = start_directory
+            self.executed_stages_stack = [os.path.basename(start_directory)]
+
+        else:
+            self.start_directory = base_directory
+            self.executed_stages_stack = []
         self.current_directory = self.start_directory
-        self.start_folder = start_folder
+
         self.verbose = verbose
         self.stack_stages_names = stacked_stages_names_output
-        self.executed_stages_stack = [start_folder]
+
         self.stages = []
         self.stage_control = {}
         self.prestage_function = None
@@ -45,11 +52,14 @@ class DataPipelineController:
         self.config = config
         self.full_pipeline_execution = True
 
-        self.config.add_parameter('logs_dir', os.path.join(self.base_directory, 'logs'))
-        if not os.path.exists(config.logs_dir):
-            os.makedirs(config.logs_dir)
+        if config is not None:
+            self.config.add_parameter('logs_dir', os.path.join(self.base_directory, 'logs'))
+            if not os.path.exists(config.logs_dir):
+                os.makedirs(config.logs_dir)
 
-        self.config.add_parameter('timestamp', self.timestamp)
+            self.config.add_parameter('timestamp', self.timestamp)
+
+
 
 
     def add_stage(self, stage_name, function_pointer, output_name=""):
@@ -127,10 +137,12 @@ class DataPipelineController:
                     self.executed_stages_stack.append(output_name)
                     next_directory = os.path.join(self.base_directory, '_'.join(self.executed_stages_stack))
                 else:
-                    if self.start_folder:
-                        next_directory = os.path.join(self.base_directory, f"{self.start_folder}_{output_name}")
-                    else:
-                        next_directory = os.path.join(self.base_directory, output_name)
+                    # if self.starting_dir is not None:
+                    #     # next_directory = os.path.join(self.base_directory, f"{self.start_folder}_{output_name}")
+                    #     next_directory = self.starting_dir
+                    #     starting_dir = None
+                    # else:
+                    next_directory = os.path.join(self.base_directory, output_name)
 
                 if not os.path.exists(next_directory):
                     os.makedirs(next_directory)
