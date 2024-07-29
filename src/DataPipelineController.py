@@ -7,7 +7,7 @@ class DataPipelineController:
     A class to manage and execute a data processing pipeline with multiple stages.
 
     Attributes:
-        base_directory (str): The root directory for the dataset.
+        base_output_directory (str): The root directory for the output.
         current_directory (str): The current working directory within the pipeline.
         verbose (bool): Enables verbose output for detailed processing information.
         stack_stages_names (bool): Controls the naming of output directories.
@@ -19,32 +19,30 @@ class DataPipelineController:
         full_pipeline_execution (bool): Indicates if the entire pipeline is executed without skipping stages.
     """
 
-    def __init__(self, base_directory, start_directory, config=None, verbose=False, stacked_stages_names_output=False):
+    def __init__(self, output_directory, start_directory, config=None, verbose=False, stacked_stages_names_output=False):
         """
         Initializes the DataPipelineController with a base directory, start folder, and configuration options.
 
         Args:
-            base_directory (str): The root directory for the dataset.
+            output_directory (str): The root directory for the output.
             start_folder (str): The starting folder within the base directory.
             config (dict, optional): Configuration dictionary for additional settings.
             verbose (bool, optional): Enables verbose output, default is False.
             stacked_stages_names_output (bool, optional): Controls the naming of output directories, default is False.
         """
         self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.base_directory = os.path.join(base_directory, f"pipeline_output_{self.timestamp}")
+        self.base_output_directory = os.path.join(output_directory, f"pipeline_output_{self.timestamp}")
 
         if start_directory is not None:
             self.start_directory = start_directory
             self.executed_stages_stack = [os.path.basename(start_directory)]
-
         else:
-            self.start_directory = base_directory
+            self.start_directory = output_directory
             self.executed_stages_stack = []
-        self.current_directory = self.start_directory
 
+        self.current_directory = self.start_directory
         self.verbose = verbose
         self.stack_stages_names = stacked_stages_names_output
-
         self.stages = []
         self.stage_control = {}
         self.prestage_function = None
@@ -53,14 +51,10 @@ class DataPipelineController:
         self.full_pipeline_execution = True
 
         if config is not None:
-            self.config.add_parameter('logs_dir', os.path.join(self.base_directory, 'logs'))
+            self.config.add_parameter('logs_dir', os.path.join(self.base_output_directory, 'logs'))
             if not os.path.exists(config.logs_dir):
                 os.makedirs(config.logs_dir)
-
             self.config.add_parameter('timestamp', self.timestamp)
-
-
-
 
     def add_stage(self, stage_name, function_pointer, output_name=""):
         """
@@ -73,7 +67,10 @@ class DataPipelineController:
         """
         stage_id = len(self.stages)
         self.stages.append({
-            'id': stage_id, 'name': stage_name, 'function': function_pointer, 'output_name': output_name
+            'id': stage_id,
+            'name': stage_name,
+            'function': function_pointer,
+            'output_name': output_name
         })
         self.stage_control[stage_id] = True  # Enable the stage by default
 
@@ -135,14 +132,9 @@ class DataPipelineController:
             if output_name:
                 if self.stack_stages_names:
                     self.executed_stages_stack.append(output_name)
-                    next_directory = os.path.join(self.base_directory, '_'.join(self.executed_stages_stack))
+                    next_directory = os.path.join(self.base_output_directory, '_'.join(self.executed_stages_stack))
                 else:
-                    # if self.starting_dir is not None:
-                    #     # next_directory = os.path.join(self.base_directory, f"{self.start_folder}_{output_name}")
-                    #     next_directory = self.starting_dir
-                    #     starting_dir = None
-                    # else:
-                    next_directory = os.path.join(self.base_directory, output_name)
+                    next_directory = os.path.join(self.base_output_directory, output_name)
 
                 if not os.path.exists(next_directory):
                     os.makedirs(next_directory)

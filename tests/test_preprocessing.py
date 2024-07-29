@@ -23,7 +23,7 @@ def function4(config, input_directory, output_directory):
 
 # Usage
 pipeline = DataPipelineController(
-    base_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data',
+    output_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data',
     start_directory=r'C:\Users\mdokukin1\Desktop\GitHub\Data-Pipeline\data\ESC50',
     verbose=True,
     stacked_stages_names_output=True
